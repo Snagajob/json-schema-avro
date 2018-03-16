@@ -96,7 +96,9 @@ final class RecordTranslator
             fieldSchema = field.schema();
             fieldType = fieldSchema.getType();
             translator = AvroTranslators.getTranslator(fieldType);
-            required.add(fieldName);
+            if (isRequiredField(field)) {
+                required.add(fieldName);
+            }
             ptr = JsonPointer.of("properties", fieldName);
             propertyNode = FACTORY.objectNode();
             properties.put(fieldName, propertyNode);
@@ -105,6 +107,23 @@ final class RecordTranslator
             translator.translate(fieldSchema, jsonSchema, report);
             jsonSchema.setPointer(pwd);
         }
+    }
+
+    private boolean isRequiredField(Schema.Field field) {
+        if (field.defaultValue() != null) {
+            return false;
+        }
+
+        Schema fieldSchema = field.schema();
+        if (fieldSchema.getType() == Schema.Type.UNION) {
+            for (Schema typeSchema : fieldSchema.getTypes()) {
+                if (typeSchema.getType() == Schema.Type.NULL) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     private static void injectDefault(final ObjectNode propertyNode,
