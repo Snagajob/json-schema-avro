@@ -123,6 +123,9 @@ project.ext {
     projectURL = sprintf("https://github.com/fge/%s", name);
     sonatypeStaging = "https://oss.sonatype.org/service/local/staging/deploy/maven2/";
     sonatypeSnapshots = "https://oss.sonatype.org/content/repositories/snapshots/";
+
+    mygetToken = System.getenv("MYGET_TOKEN") ?: ""
+    mygetUrl = "https://www.myget.org/F/snagajob/auth/${mygetToken}/maven/"
 };
 
 task checkSigningRequirements << {
@@ -140,26 +143,10 @@ task checkSigningRequirements << {
 }
 
 uploadArchives {
-    dependsOn(checkSigningRequirements);
     repositories {
         mavenDeployer {
-            beforeDeployment {
-                MavenDeployment deployment -> signing.signPom(deployment);
-            }
-
-            repository(url: "${sonatypeStaging}") {
-                authentication(
-                    userName: project.properties["sonatypeUsername"],
-                    password: project.properties["sonatypePassword"]
-                );
-            }
-
-            snapshotRepository(url: "${sonatypeSnapshots}") {
-                authentication(
-                    userName: project.properties["sonatypeUsername"],
-                    password: project.properties["sonatypePassword"]
-                );
-            }
+            repository(url: mygetUrl)
+            snapshotRepository(url: mygetUrl)
         }
     }
 }
