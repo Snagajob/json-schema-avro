@@ -1,0 +1,14 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    environment:
+      TERM: dumb
+      
+    steps:
+      - checkout
+      - run:
+          name: Execute Gradle build
+          command: ./gradlew uploadArchives
