@@ -107,6 +107,13 @@ final class RecordTranslator
             translator.translate(fieldSchema, jsonSchema, report);
             jsonSchema.setPointer(pwd);
         }
+
+        // this is a workaround to address the fact that the 3rd party lib we use for JSON schema validation does not
+        // allow an empty "required" array, even though this is permitted in the current JSON schema spec. If there are
+        // no required fields in the Avro schema, we'll just remove the "required" property from the JSON schema.
+        if (required.size() == 0) {
+            jsonSchema.getCurrentNode().remove("required");
+        }
     }
 
     private boolean isRequiredField(Schema.Field field) {

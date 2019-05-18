@@ -20,7 +20,7 @@
  * Project-specific settings. Unfortunately we cannot put the name in there!
  */
 group = "co.snag";
-version = "0.1.5-SNAPSHOT";
+version = "0.1.6";
 sourceCompatibility = "1.6";
 targetCompatibility = "1.6"; // defaults to sourceCompatibility
 
